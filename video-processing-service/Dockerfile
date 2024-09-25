@@ -16,7 +16,7 @@ RUN npm install
 #copy app source inside docker image
 COPY . .
 
-#Make port 3000available outside this container
+#Make port 3000 available outside this container
 EXPOSE 3000
 
 #Define the command to run your app using CMD (only one CMD Allowed)
