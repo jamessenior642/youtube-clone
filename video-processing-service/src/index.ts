@@ -7,6 +7,7 @@ import {
     convertVideo,
     setUpDirectories
 } from './storage';
+import { isVideoNew, setVideo } from "./firestore";
   
 //Create local directories for videos
 setUpDirectories();
@@ -31,6 +32,17 @@ app.post("/process-video",  async (req, res) => {
 
     const inputFileName = data.name;
     const outputFileName = `processed-${inputFileName}`;
+    const videoId = inputFileName.split('.')[0];
+
+    if (!(await isVideoNew(videoId))) {
+        return res.status(400).send('Bad Request: video already processing or processed.');
+      } else {
+        await setVideo(videoId, {
+          id: videoId,
+          uid: videoId.split('-')[0],
+          status: 'processing'
+        });
+    }
 
     //Download raw vid from cloud strorage
     await downloadRawVideo(inputFileName);
@@ -49,10 +61,17 @@ app.post("/process-video",  async (req, res) => {
     // upload the processed video to cloud storage
     await uploadProcessedVideo(outputFileName);
 
+    await setVideo(videoId, {
+        status: 'processed',
+        filename: outputFileName
+    });
+
     await Promise.all([
         deleteRawVideo(inputFileName),
         deleteProcessedVideo(outputFileName)
-    ])
+    ]);
+
+    return res.status(200).send('Processing finished successfully');
 });
 
 const port = process.env.PORT || 3000;
