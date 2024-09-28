@@ -20,7 +20,7 @@ app.post("/process-video",  async (req, res) => {
     let data;
     try {
         const message = Buffer.from(req.body.message.data,
-            'base64').toString('utf-8');
+            'base64').toString('utf8');
         data = JSON.parse(message);
         if (!data.name) {
             throw new Error('Invalid message payload received.');
@@ -34,7 +34,7 @@ app.post("/process-video",  async (req, res) => {
     const outputFileName = `processed-${inputFileName}`;
     const videoId = inputFileName.split('.')[0];
 
-    if (!(await isVideoNew(videoId))) {
+    if (!isVideoNew(videoId)) {
         return res.status(400).send('Bad Request: video already processing or processed.');
       } else {
         await setVideo(videoId, {

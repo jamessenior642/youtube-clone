@@ -1,5 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
+import { getFunctions } from "firebase/functions";
 import { 
     getAuth,
     signInWithPopup, 
@@ -21,6 +22,7 @@ const app = initializeApp(firebaseConfig);
 
 const auth = getAuth(app);
 
+export const functions = getFunctions(app);
 
 /**
  * Signs the user in with a Google popup.
